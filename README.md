@@ -1,4 +1,4 @@
-# PROJECT: Autonomous Safety Constraint Validation - Generative AI Pipeline (ASCV-GenAI)
+#Autonomous Safety Constraint Validation - Generative AI Pipeline (ASCV-GenAI)
 
 ## 1. Vision & Project Definition (Think Big & Customer Obsession)
 
