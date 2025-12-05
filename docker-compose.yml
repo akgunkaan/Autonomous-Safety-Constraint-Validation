@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  # The main application service
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./src:/app/src
+      # Mount a local directory for the vector store to persist data
+      - ./chroma_db_data:/app/chroma_db
+    env_file:
+      - .env # Pass environment variables from a .env file
+    depends_on:
+      - redis
+      - chromadb
+    command: uvicorn src.ascv_genai.api.main:app --host 0.0.0.0 --port 8000 --reload
+
+  # ChromaDB vector store
+  chromadb:
+    image: chromadb/chroma:0.4.18
+    ports:
+      - "8001:8000" # Expose ChromaDB's API on a different port
+    volumes:
+      - ./chroma_db_data:/chroma/.chroma/
+    
+  # Redis for Celery message broker and caching
+  redis:
+    image: redis:7.2-alpine
+    ports:
+      - "6379:6379"
+
+  # Celery worker for background tasks (like document ingestion)
+  worker:
+    build: .
+    command: celery -A src.ascv_genai.workflow.tasks worker --loglevel=info
+    volumes:
+      - ./src:/app/src
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - app
+
+volumes:
+  chroma_db_data:

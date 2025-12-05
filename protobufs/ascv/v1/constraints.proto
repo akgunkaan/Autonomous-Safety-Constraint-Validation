@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package ascv.v1;
+
+// Defines a single safety constraint extracted from a regulation document.
+// This structure is designed to be integrated into the PPES
+// (Partial Pruning Entity Structure).
+message Constraint {
+  // The name of the variable being constrained, e.g., "max_wind_speed".
+  string variable_name = 1;
+
+  // The value of the constraint. We use oneof to be flexible with data types.
+  oneof value {
+    double value_double = 2;
+    float value_float = 3;
+    int32 value_int32 = 4;
+    string value_string = 5;
+    bool value_bool = 6;
+  }
+
+  // The unit of measurement for the value, e.g., "m/s", "km/h", "degrees".
+  string unit = 7;
+
+  // Source of the constraint (e.g., "EASA Regulation 2019/947, Article 4, Section 2b")
+  string source_reference = 8;
+}
+
+// A collection of constraints, which might represent a complete PPES file.
+message ConstraintSet {
+  repeated Constraint constraints = 1;
+  string metadata_source_file = 2;
+}
